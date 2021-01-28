@@ -2,15 +2,16 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	// "fmt"
 	"golang.org/x/net/html"
 	"log"
 	"os"
+	"packages/packages"
 )
 
 func main() {
 	// file flag
-	filePtr := flag.String("file", "ex2.html", "HTML file to parse")
+	filePtr := flag.String("file", "ex1.html", "HTML file to parse")
 	flag.Parse()
 
 	// open file as bytes
@@ -21,7 +22,8 @@ func main() {
 
 	// fmt.Println(file)
 
-	// parse bytefile
+	// parse the html in the reader (not necessarily .html file) and return the parse tree (this parse tree is not in a readable format)
+	// doc is of type *html.Node
 	doc, err := html.Parse(file)
 	if err != nil {
 		log.Fatal(err)
@@ -29,17 +31,5 @@ func main() {
 
 	// fmt.Println(doc)
 
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "a" {
-			for _, val := range n.Attr {
-				fmt.Println(val)
-				// break
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
-	f(doc)
+	parse.TreeParser(doc)
 }
