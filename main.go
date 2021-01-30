@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	// "fmt"
+	"fmt"
 	"golang.org/x/net/html"
 	"log"
 	"os"
@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// file flag
-	filePtr := flag.String("file", "ex1.html", "HTML file to parse")
+	filePtr := flag.String("file", "ex2.html", "HTML file to parse")
 	flag.Parse()
 
 	// open file as bytes
@@ -31,5 +31,5 @@ func main() {
 
 	// fmt.Println(doc)
 
-	parse.TreeParser(doc)
+	fmt.Println(parse.TreeParser(doc))
 }
