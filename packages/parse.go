@@ -1,7 +1,7 @@
 package parse
 
 import (
-	// "fmt"
+	"fmt"
 	"golang.org/x/net/html"
 	"strings"
 )
@@ -20,17 +20,24 @@ func TreeParser(n *html.Node) []Link {
 		for _, attribute := range n.Attr {
 			// check attribute type
 			if attribute.Key == "href" {
+				newLink := Link{}
+				newLink.Href = attribute.Key
 				// attribute.Val : link
-				// fmt.Println(attribute.Val)
+				fmt.Println("newlink:", newLink)
 
 				// iterate over node children for text
 				for c := n.FirstChild; c != nil; c = c.NextSibling {
 					trimmedText := strings.TrimSpace(c.Data)
 					if c.Type == html.TextNode && len(trimmedText) > 0 {
-						// fmt.Printf("c: %q\n", trimmedText)
-						newLink := Link{attribute.Val, trimmedText}
+						fmt.Printf("c: %q\n", trimmedText)
+						if newLink.Text == "" {
+							newLink.Text = trimmedText
+						} else {
+							newLink.Text = newLink.Text + trimmedText
+						}
+						fmt.Println("newlink:", newLink)
 						Links = append(Links, newLink)
-						break
+						// break
 					}
 				}
 				// break
