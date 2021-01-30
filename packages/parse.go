@@ -1,7 +1,7 @@
 package parse
 
 import (
-	"fmt"
+	// "fmt"
 	"golang.org/x/net/html"
 	"strings"
 )
@@ -21,26 +21,13 @@ func TreeParser(n *html.Node) []Link {
 			// check attribute type
 			if attribute.Key == "href" {
 				newLink := Link{}
-				newLink.Href = attribute.Key
 				// attribute.Val : link
-				fmt.Println("newlink:", newLink)
+				newLink.Href = attribute.Val
+
+				// fmt.Println("newlink:", newLink)
 
 				// iterate over node children for text
-				for c := n.FirstChild; c != nil; c = c.NextSibling {
-					trimmedText := strings.TrimSpace(c.Data)
-					if c.Type == html.TextNode && len(trimmedText) > 0 {
-						fmt.Printf("c: %q\n", trimmedText)
-						if newLink.Text == "" {
-							newLink.Text = trimmedText
-						} else {
-							newLink.Text = newLink.Text + trimmedText
-						}
-						fmt.Println("newlink:", newLink)
-						Links = append(Links, newLink)
-						// break
-					}
-				}
-				// break
+				TextParser(n, newLink)
 			}
 		}
 	}
@@ -54,14 +41,24 @@ func TreeParser(n *html.Node) []Link {
 	return Links
 }
 
-// func TextParser(n *html.Node) {
-// 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-// 		trimmedText := strings.TrimSpace(c.Data)
-// 		if c.Type == html.TextNode && len(trimmedText) > 0 {
-// 			// fmt.Printf("c: %q\n", trimmedText)
-// 			newLink := Link{attribute.Val, trimmedText}
-// 			Links = append(Links, newLink)
-// 			break
-// 		}
-// 	}
-// }
+// iterate over each child element for text
+func TextParser(n *html.Node, newLink Link) {
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		trimmedText := strings.TrimSpace(c.Data)
+		// if it's text but not just whitespace
+		if c.Type == html.TextNode && len(trimmedText) > 0 {
+			// fmt.Printf("c: %q\n", trimmedText)
+
+			// if text is not empty, adds to previous text instead of adding a new link
+			if newLink.Text == "" {
+				newLink.Text = trimmedText
+			} else {
+				newLink.Text = newLink.Text + trimmedText
+			}
+			// fmt.Println("newlink:", newLink)
+			// break
+		}
+	}
+	// adds to Links after all text is added
+	Links = append(Links, newLink)
+}
