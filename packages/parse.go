@@ -1,7 +1,7 @@
 package parse
 
 import (
-	"fmt"
+	// "fmt"
 	"golang.org/x/net/html"
 	"strings"
 )
@@ -21,13 +21,16 @@ func TreeParser(n *html.Node) []Link {
 			// check attribute type
 			if attribute.Key == "href" {
 				newLink := Link{}
+				linkPointer := &newLink
 				// attribute.Val : link
-				newLink.Href = attribute.Val
-
-				// fmt.Println("newlink:", newLink)
+				linkPointer.Href = attribute.Val
 
 				// iterate over node children for text
-				TextParser(n, newLink)
+				TextParser(n, linkPointer)
+				// fmt.Println("pointer outside parser:", linkPointer)
+
+				// add to Links after all the text has been added
+				Links = append(Links, *linkPointer)
 			}
 		}
 	}
@@ -42,38 +45,27 @@ func TreeParser(n *html.Node) []Link {
 }
 
 // iterate over each child element for text
-func TextParser(n *html.Node, newLink Link) {
+func TextParser(n *html.Node, linkPointer *Link) {
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		// not necessarily text, could be tag if it's an element node
 		trimmedText := strings.TrimSpace(c.Data)
 		// if it's text but not just whitespace
 		if c.Type == html.TextNode && len(trimmedText) > 0 {
-			fmt.Println("newlink at start of if loop:", newLink)
 			// fmt.Printf("c: %q\n", trimmedText)
 
 			// if text is not empty, adds to previous text instead of adding a new link
-			if newLink.Text == "" {
-				newLink.Text = trimmedText
+			if linkPointer.Text == "" {
+				linkPointer.Text = trimmedText
 			} else {
-				newLink.Text = newLink.Text + trimmedText
+				linkPointer.Text = linkPointer.Text + trimmedText
 			}
-			// fmt.Println("newlink at end of if loop:", newLink)
-			// fmt.Println("Links in if loop:", Links)
-			// fmt.Println("----------------")
-			// break
+			// fmt.Println("pointer in parser:", linkPointer)
 		}
 		if c.Type == html.ElementNode && c.FirstChild != nil {
-			// fmt.Println("else loop:", c.Data)
-			TextParser(c, newLink)
-			// for d := c.FirstChild; d != nil; d = d.NextSibling {
-			// 	trimmedText = strings.TrimSpace(d.Data)
-			// 	if d.Type == html.TextNode && len(trimmedText) > 0 {
-			// 		fmt.Println("child data:", d.Data)
-			// 	}
-			// }
+			// linkPointer.Text = linkPointer.Text + " "
+			TextParser(c, linkPointer)
 		}
 	}
-	// adds to Links after all text is added
-	Links = append(Links, newLink)
-	// fmt.Println("Links outside loop:", Links)
-	// fmt.Println("---------------------------------------------")
+	// If I append here, then same link is repeated due to recursion, so adding outside the function instead
+	// Links = append(Links, *linkPointer)
 }
