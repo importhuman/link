@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// file flag
-	filePtr := flag.String("file", "ex4.html", "HTML file to parse")
+	filePtr := flag.String("file", "ex2.html", "HTML file to parse")
 	flag.Parse()
 
 	// open file as bytes
@@ -31,5 +31,6 @@ func main() {
 
 	// fmt.Println(doc)
 
-	fmt.Println(parse.TreeParser(doc))
+	result := parse.TreeParser(doc)
+	fmt.Println(result)
 }
