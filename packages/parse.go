@@ -29,6 +29,10 @@ func TreeParser(n *html.Node) []Link {
 				TextParser(n, linkPointer)
 				// fmt.Println("pointer outside parser:", linkPointer)
 
+				// fixes spacing issues by:
+				// 1. strings.Fields splits text wherever multiple whitespaces are present into a slice
+				// 2. strings.Join joins the slice objects with a single space
+				linkPointer.Text = strings.Join(strings.Fields(linkPointer.Text), " ")
 				// add to Links after all the text has been added
 				Links = append(Links, *linkPointer)
 			}
@@ -55,9 +59,9 @@ func TextParser(n *html.Node, linkPointer *Link) {
 
 			// if text is not empty, adds to previous text instead of adding a new link
 			if linkPointer.Text == "" {
-				linkPointer.Text = trimmedText
+				linkPointer.Text = c.Data
 			} else {
-				linkPointer.Text = linkPointer.Text + trimmedText
+				linkPointer.Text = linkPointer.Text + c.Data
 			}
 			// fmt.Println("pointer in parser:", linkPointer)
 		}
